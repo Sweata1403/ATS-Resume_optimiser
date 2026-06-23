@@ -1,46 +1,67 @@
-ATS Resume Optimizer ✦
-An AI-powered resume optimizer that tailors your resume to any job description — adding ATS keywords, strengthening bullet points, and outputting an editable .docx and compilable .tex in your chosen Overleaf template. Built with a multi-chat sidebar so you can manage separate applications like Claude or ChatGPT.
+# ✦ ATS Resume Optimizer
+
+> **AI-powered resume tailoring with multi-chat session management, editable .docx output, and LaTeX generation for 4 real Overleaf templates.**
+
 ---
-Preview
-Sidebar + Chat	Editable .docx Preview
-Start new chats per job, switch between them	Click any text in the Word-like editor and type
+
+## 🚀 What It Does
+
+Upload your resume, paste a job description, and get back:
+
+- 🎯 An **ATS-optimized resume** with keywords woven in naturally — nothing removed, only enhanced
+- 📝 An **editable .docx** you can click into and type directly in the browser, then download
+- λ A **compilable .tex file** styled to your chosen Overleaf template
+- 💬 **Multi-chat sessions** — one chat per job application, just like Claude or ChatGPT
+
 ---
-Features
-Multi-chat session management — sidebar with Today / Yesterday / Last 7 days grouping, rename, delete, persistence across refreshes
-Resume upload — PDF or DOCX (drag & drop or click)
-ATS optimization — Claude weaves job-description keywords into your resume without removing anything original; keywords highlighted in bold
-Editable .docx preview — live Word-like editor in the browser; click any text, type, then download
-LaTeX output — 4 Overleaf templates with exact preamble/structure (see Templates section)
-Copy LaTeX — clipboard copy with guaranteed manual-select fallback if the browser blocks auto-copy
-LaTeX health check — detects unbalanced `\begin`/`\end` before you open Overleaf
+
+## ✨ Features
+
+| Feature | Description |
+|---|---|
+| 💬 Multi-chat sidebar | New Chat button, grouped by Today / Yesterday / Last 7 days, rename & delete |
+| 📂 Resume upload | PDF or DOCX — drag & drop or click to browse |
+| 🎯 ATS optimization | Claude adds job keywords into existing bullets, never fabricates experience |
+| 🔵 Keyword highlighting | Added terms shown in **bold blue** — visual diff of what changed |
+| ✏️ Live editor | Click any text in the Word-like preview, type, then save as `.docx` |
+| λ LaTeX output | 4 Overleaf templates with exact preamble reproduction |
+| ⎘ Copy LaTeX | Clipboard API with manual-select modal fallback |
+| ⚠️ LaTeX health check | Detects unbalanced `\begin`/`\end` before you open Overleaf |
+| 💾 Session persistence | Chats survive page refresh via artifact storage |
+
 ---
-Usage (Artifact / Claude.ai)
-Open the artifact in Claude.ai
-Click ＋ New Chat in the sidebar
-Upload your resume (PDF or DOCX)
-Pick a LaTeX template from the 4 options
-Paste a job description and press Send ↑ (or Ctrl+Enter)
-When the result arrives:
-✏️ Edit & Download — opens the live editor; edit any text, save as `.docx`
-⬇ .docx — instant download without editing
-⬇ .tex — download the LaTeX source file
-⎘ Copy LaTeX — copy to clipboard (fallback modal if blocked)
-↗ Overleaf — opens the original template on Overleaf
----
-Vercel Deployment
-To run this as a standalone web app:
-1. Scaffold a Next.js project
-```bash
-npx create-next-app@latest ats-optimizer --typescript --app --no-tailwind --no-eslint
-cd ats-optimizer
+
+## 🖥️ Using the Artifact (Claude.ai)
+
 ```
-2. Install dependencies
+1. Click  ＋ New Chat  in the sidebar
+2. Upload your resume (PDF or DOCX)
+3. Pick a LaTeX template from the 4 cards
+4. Paste a job description → press Send ↑  (or Ctrl+Enter)
+5. When the result appears:
+      ✏️ Edit & Download  →  live editor, save as .docx
+      ⬇ .docx            →  instant download
+      ⬇ .tex             →  LaTeX source file
+      ⎘ Copy LaTeX        →  copy to clipboard
+      ↗ Overleaf          →  open original template
+```
+
+---
+
+## ⚡ Deploy to Vercel
+
+### Step 1 — Scaffold the project
+
 ```bash
+npx create-next-app@latest ats-optimizer --typescript --app
+cd ats-optimizer
 npm install @anthropic-ai/sdk jszip mammoth
 ```
-3. Add the API route
-Create `app/api/optimize/route.ts`:
+
+### Step 2 — Create the API route
+
 ```typescript
+// app/api/optimize/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 
@@ -57,92 +78,124 @@ export async function POST(req: NextRequest) {
   return NextResponse.json(response);
 }
 ```
-4. Replace fetch URL
-In the artifact JSX, change:
+
+### Step 3 — Update the fetch call in the UI
+
 ```js
-// FROM (Claude.ai artifact — key injected by platform)
+// Change this one line in app/page.tsx (or the artifact JSX):
+
+// ❌ Artifact version (Anthropic injects the key)
 fetch("https://api.anthropic.com/v1/messages", { ... })
 
-// TO (Vercel — key stays on server)
+// ✅ Vercel version (key stays on your server)
 fetch("/api/optimize", { ... })
 ```
-5. Set your API key
+
+### Step 4 — Add your API key
+
 ```bash
-cp .env.local.example .env.local
-# Add: ANTHROPIC_API_KEY=sk-ant-api03-xxxxxxxx
+# .env.local
+ANTHROPIC_API_KEY=sk-ant-api03-xxxxxxxxxxxxxxxxxxxxxxxx
 ```
-Get a key at console.anthropic.com.
-6. Run locally
-```bash
-npm run dev
-# → http://localhost:3000
-```
-7. Deploy to Vercel
+
+Get yours at [console.anthropic.com](https://console.anthropic.com)
+
+### Step 5 — Deploy
+
 ```bash
 npx vercel deploy
+# Add ANTHROPIC_API_KEY in Vercel Dashboard → Settings → Environment Variables
 ```
-Add `ANTHROPIC_API_KEY` in Vercel Dashboard → Project → Settings → Environment Variables.
+
 ---
-LaTeX Templates
-#	Template	Engine	Works in blank Overleaf?
-1	harshibar's Resume	pdflatex	✅ Yes — standard CTAN packages only
-2	Entry Level Resume (Twenty Seconds CV)	xelatex	⚠️ No — open original project first
-3	Deedy / Mohamed Javid	xelatex	⚠️ No — open original project first
-4	autoCV	pdflatex	✅ Yes — standard CTAN packages only
-For templates marked ⚠️:
-Click ↗ Open on Overleaf in the app
-In that Overleaf project, open the `.tex` file
-Select all → paste the generated LaTeX
-Click Recompile with XeLaTeX selected as the compiler
+
+## λ LaTeX Templates
+
+| # | Template | Engine | Blank Overleaf? |
+|---|---|---|---|
+| 1 | **harshibar's Resume** | `pdflatex` | ✅ Yes — CTAN only |
+| 2 | **Entry Level** (Twenty Seconds CV) | `xelatex` | ⚠️ No — needs original project |
+| 3 | **Deedy / Mohamed Javid** | `xelatex` | ⚠️ No — needs original project |
+| 4 | **autoCV** | `pdflatex` | ✅ Yes — CTAN only |
+
+> **For ⚠️ templates:** Click **↗ Open on Overleaf** → open the `.tex` file in that project → select all → paste → Recompile with **XeLaTeX**.
+
 ---
-How ATS optimization works
-Your resume (PDF or DOCX) is sent to Claude along with the job description
-Claude identifies keywords, skills, tools, and action verbs from the JD that are missing or weak in your resume
-These are woven naturally into your existing bullet points — nothing is removed
-Newly added/emphasized terms are wrapped in `[[keyword]]` which renders as bold blue in the preview
-A summary section lists every keyword added and an estimated ATS match score improvement
----
-Project structure (Vercel version)
+
+## 🧠 How the ATS Optimization Works
+
 ```
-app/
-  page.tsx              ← full multi-chat UI
-  layout.tsx            ← HTML shell
-  globals.css           ← base styles + animations
-  api/
-    optimize/
-      route.ts          ← Anthropic API proxy (keeps key secret)
-lib/
-  types.ts              ← TypeScript interfaces
-  templates.ts          ← 4 Overleaf template specs + LaTeX preambles
-  docx.ts               ← DOCX XML generation, per-template styling
+Your Resume  ──┐
+               ├──▶  Claude  ──▶  Optimized Resume
+Job Description─┘
+
+Claude will:
+  ✅  Add JD keywords into existing bullet points naturally
+  ✅  Strengthen weak action verbs to match JD language
+  ✅  Expand Skills section with JD-relevant tools
+  ✅  Mark every change with [[keyword]] → renders bold blue
+  ❌  Never remove existing experience or education
+  ❌  Never fabricate skills you don't have
 ```
+
 ---
-Tech stack
-Layer	Technology
-UI framework	React 18 (artifact) / Next.js 14 App Router (Vercel)
-AI model	Claude Sonnet (`claude-sonnet-4-6`) via Anthropic API
-Resume parsing	mammoth — DOCX → text
-DOCX generation	JSZip + hand-crafted Word XML
-LaTeX	4 real Overleaf templates with exact preamble reproduction
-Persistence	`window.storage` (artifact) / `localStorage` (standalone)
-Styling	Inline React styles — no CSS framework dependency
+
+## 🗂️ Project Structure (Vercel)
+
+```
+ats-optimizer/
+├── app/
+│   ├── page.tsx              ← full multi-chat UI (all components)
+│   ├── layout.tsx            ← HTML shell
+│   ├── globals.css           ← base styles + animations
+│   └── api/
+│       └── optimize/
+│           └── route.ts      ← Anthropic proxy (key never hits browser)
+├── lib/
+│   ├── types.ts              ← TypeScript interfaces
+│   ├── templates.ts          ← 4 Overleaf specs + LaTeX preambles
+│   └── docx.ts               ← DOCX XML generation, per-template styles
+├── .env.local                ← ANTHROPIC_API_KEY (never commit this)
+└── package.json
+```
+
 ---
-Environment variables
-Variable	Required	Description
-`ANTHROPIC_API_KEY`	✅ Yes (Vercel only)	Your Anthropic API key — never needed in the Claude.ai artifact version
+
+## 🛠️ Tech Stack
+
+| Layer | Tech |
+|---|---|
+| Framework | React 18 (artifact) · Next.js 14 App Router (Vercel) |
+| AI | Claude Sonnet via `@anthropic-ai/sdk` |
+| Resume parsing | `mammoth` — DOCX → plain text |
+| DOCX generation | `jszip` + hand-crafted Word XML (no external service) |
+| LaTeX | 4 real Overleaf templates, exact preamble copied from source |
+| Persistence | `window.storage` (artifact) · `localStorage` (standalone) |
+| Styling | Inline React styles — zero CSS framework dependency |
+
 ---
-Limitations
-File data is in-memory — if you refresh the page, you'll need to re-upload your resume (the chat history and messages are preserved, just not the file binary)
-Two templates require Overleaf — Twenty Seconds CV and Deedy use custom `.cls` files not available on CTAN; they must be compiled inside the original Overleaf project
-PDF base64 size — very large PDFs (>5MB) may hit API body size limits; DOCX upload is recommended for large resumes
-Token budget — the optimizer uses up to 7,000 output tokens; extremely long resumes + JDs may get truncated; split into sections if needed
+
+## ⚠️ Known Limitations
+
+- **File data is in-memory** — re-upload your resume after a page refresh (chat history is preserved, file binary is not)
+- **Two templates need Overleaf** — Twenty Seconds CV and Deedy use custom `.cls` files not on CTAN
+- **Large PDFs** — files over ~5 MB may hit API body size limits; prefer DOCX for large resumes
+- **Token budget** — output capped at 7,000 tokens; very long resumes + JDs may truncate
+
 ---
-License
-MIT — use freely, attribution appreciated.
+
+## 🔗 Links
+
+- [Anthropic Console](https://console.anthropic.com) — get your API key
+- [harshibar's Resume](https://www.overleaf.com/latex/templates/harshibars-resume/sbcyynmtpnyd) — Overleaf template
+- [Entry Level Resume](https://www.overleaf.com/latex/templates/entry-level-resume-template-latex/jsmpwkcwyntg) — Overleaf template
+- [Deedy / Mohamed Javid](https://www.overleaf.com/articles/mohamed-javids-single-page-resume/ryhxghnkffqp) — Overleaf article
+- [autoCV](https://www.overleaf.com/latex/templates/autocv/scfvqfpxncwb) — Overleaf template
+
 ---
-Links
-Anthropic Console — get your API key
-harshibar's Resume on Overleaf
-Entry Level Resume on Overleaf
-Mohamed Javid / Deedy on Overleaf
-autoCV on Overleaf
+
+<div align="center">
+
+Made with Claude · MIT License
+
+</div>
